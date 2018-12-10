@@ -1,131 +1,49 @@
-import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
-import {Camera, Permissions} from 'expo';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-export default class App extends React.Component {
+import React, {Component} from 'react';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            hasCameraPermission: null,
-            showScreen: false,
-            imgSource: '',
-            imgHeight: null,
-            imgWidth: null,
-            base64: ''
-        }
-    }
+const instructions = Platform.select({
+  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
+  android:
+    'Double tap R on your keyboard to reload,\n' +
+    'Shake or press menu button for dev menu',
+});
 
-
-    async componentDidMount() {
-        const {status} = await Permissions.askAsync(Permissions.CAMERA);
-        this.setState({hasCameraPermission: status === 'granted'});
-    }
-
-    snap = async () => {
-        if (this.camera) {
-            let photoFile = await this.camera.takePictureAsync({base64: true}).then(photo => {
-                this.setState({
-                    showScreen: true,
-                    base64: photo.base64,
-                    imgSource: photo.uri,
-                });
-                if (photo.base64 !== '') {
-                    this.uploadPictureToserver(photo);
-                }
-
-
-            }).catch(e => {
-                console.log(e)
-            });
-        }
-    }
-
-    uploadPictureToserver = (photo) => {
-        const urlBase64 = '/upload/base64';
-
-        let options = {
-            method: 'post',
-            headers: {
-                'Content-type': 'text/plain',
-            },
-            body: photo.base64,
-        }
-        fetch(urlBase64, options).then(res => {
-            console.log(res);
-        }).catch(e => {
-            console.log('catch');
-            console.log(e)});
-    }
-
-    handleBack = () => {
-        this.setState({
-            showScreen: false,
-        });
-    };
-
-    render() {
-        return (
-            <View style={{flex: 1}}>
-                {this.state.showScreen ?
-                    <View style={{
-                        flex: 1,
-                        backgroundColor: '#fff',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                        <Image
-                            style={{width: 100, height: 100}}
-                            source={{uri: this.state.imgSource}}
-                        />
-                        <TouchableOpacity
-                            style={{
-                                flex: 1,
-                                alignSelf: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                            onPress={this.handleBack}>
-                            <Text
-                                style={{fontSize: 18, marginBottom: 10, color: 'pink'}}>
-                                {' '}Back{' '}
-                            </Text>
-                        </TouchableOpacity></View> :
-                    <Camera style={{flex: 1}}
-                            ref={ref => {
-                                this.camera = ref;
-                            }} type={this.state.type} autoFocus="on">
-                        <View
-                            style={{
-                                flex: 1,
-                                backgroundColor: 'transparent',
-                                flexDirection: 'row',
-                            }}>
-                            <TouchableOpacity
-                                style={{
-                                    flex: 1,
-                                    alignSelf: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                                onPress={this.snap}>
-                                <Text
-                                    style={{fontSize: 18, marginBottom: 200, color: 'white'}}>
-                                    {' '}Flip{' '}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Camera>}
-            </View>
-        );
-    }
+type Props = {};
+export default class App extends Component<Props> {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <Text style={styles.instructions}>To get started, edit App.js</Text>
+        <Text style={styles.instructions}>{instructions}</Text>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
 });
-
